@@ -6,7 +6,32 @@
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-    <Grid>
-        
-    </Grid>
+    <StackPanel Orientation="Vertical" >
+        <Border BorderThickness="2" Background="AliceBlue" Margin="0,0,0,1">
+            <DockPanel>
+                <Button Name="newGroup" Click="NewGroup">New Group</Button>
+                <Button Name="newEncounter" Click="NewEncounter" Margin="10,0,10,0">New Encounter</Button>
+                <Button Name ="advanceTurn" DockPanel.Dock="Right" Click="AdvanceTurn">Advance Turn</Button>
+                <TextBlock Text="Initiative tracker"/>
+            </DockPanel>
+        </Border>
+        <ListView Name="InitiativeList">
+            <ListView.View>
+                <GridView>
+                    <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"></GridViewColumn>
+                    <GridViewColumn Header="Initiative" DisplayMemberBinding="{Binding initiative}"></GridViewColumn>
+                    <GridViewColumn Header="Status Effect" DisplayMemberBinding="{Binding status}"></GridViewColumn>
+                    <GridViewColumn Header="Add Effect">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="addEffect" Content="Add"/>
+                            </DataTemplate>
+                            </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <TextBlock Name="TurnaRound" VerticalAlignment="Bottom"/>
+    </StackPanel>
+    
 </Window>
