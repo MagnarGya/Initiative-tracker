@@ -5,15 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="NewEncounterDialog" Height="120" Width="300">
+        Title="New Encounter" Height="125" Width="300">
     <StackPanel>
         <DockPanel>
             <TextBlock Text="Name"/>
-            <TextBox Name="namebox" Margin="5,5,5,5"/>
+            <TextBox Name="namebox" Margin="5,0,5,5"/>
         </DockPanel>
         <DockPanel>
             <TextBlock Text="Initiative"/>
-            <TextBox Name="initBox" Margin="5,5,5,5"/>
+            <TextBox Name="initBox" Margin="5,0,5,5"/>
+        </DockPanel>
+        <DockPanel>
+            <TextBlock Text="Health"/>
+            <TextBox Name="healthBox" Margin="5,0,5,5"/>
         </DockPanel>
         <DockPanel>
             <Button Content="Add" Width="145" Click="addClick"></Button>

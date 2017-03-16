@@ -17,26 +17,43 @@ namespace Initiative_tracker {
     /// Interaction logic for NewGroupDialog.xaml
     /// </summary>
     public partial class NewGroupDialog : Window {
-        public delegate void givelist(List<string> names);
+        public delegate void givelist(List<player> names);
         event givelist listgiver;
-        List<string> names;
+        List<player> players;
         public NewGroupDialog(givelist method) {
             listgiver += method;
-            names = new List<string>();
+            players = new List<player>();
             InitializeComponent();
             Keyboard.Focus(namebox);
         }
 
         void addClick(object sender, RoutedEventArgs args) {
-            names.Add(namebox.Text);
-            namebox.Text = "";
-            Keyboard.Focus(namebox);
+            try {
+                string name = namebox.Text;
+                int health = Convert.ToInt32(healthBox.Text);
+                players.Add(new player(name, health));
+                namebox.Text = "";
+                healthBox.Text = "";
+                Keyboard.Focus(namebox);
+            } catch {
+                healthBox.Text = "Needs to be only numbers";
+                Keyboard.Focus(healthBox);
+            }
+            
         }
 
         void doneClick(object sender, RoutedEventArgs args) {
-            listgiver.Invoke(names);
+            listgiver.Invoke(players);
             this.Close();
         }
         
+    }
+    public class player {
+        public string name { get; set; }
+        public int health { get; set; }
+        public player(string _name, int _health) {
+            name = _name;
+            health = _health;
+        }
     }
 }

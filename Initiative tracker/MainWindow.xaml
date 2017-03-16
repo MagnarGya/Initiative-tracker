@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525">
+        Title="Initiative Tracker" Height="350" Width="525">
     <StackPanel Orientation="Vertical" >
         <Border BorderThickness="2" Background="AliceBlue" Margin="0,0,0,1">
             <DockPanel>
@@ -18,9 +18,21 @@
         <ListView Name="InitiativeList">
             <ListView.View>
                 <GridView>
+                    <GridViewColumn Header="Initiative" DisplayMemberBinding="{Binding initiative}"/>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"></GridViewColumn>
-                    <GridViewColumn Header="Initiative" DisplayMemberBinding="{Binding initiative}"></GridViewColumn>
-                    <GridViewColumn Header="Status Effect" DisplayMemberBinding="{Binding status}"></GridViewColumn>
+                    <GridViewColumn Header="Health" DisplayMemberBinding="{Binding health}"/>
+                    <GridViewColumn Header="Status Effect">
+                        <!--<GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <ComboBox ItemsSource="{Binding Path=DataContext,ElementName=statuslist}"
+                                          DisplayMemberPath="Name" 
+                                    SelectedValuePath="Id" 
+    SelectedValue="{Binding ClassId}>
+                                    
+                                </ComboBox>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>-->
+                    </GridViewColumn>
                     <GridViewColumn Header="Add Effect">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>

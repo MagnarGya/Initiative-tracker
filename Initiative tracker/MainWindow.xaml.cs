@@ -18,8 +18,8 @@ namespace Initiative_tracker {
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window {
-        List<player> playerlist;
-        List<string> nameList;
+        List<character> characterlist;
+        List<player> playerList;
         int turn;
         int round;
         public MainWindow() {
@@ -32,7 +32,7 @@ namespace Initiative_tracker {
 
         void sortList() {
             SinglyLinkedNode first = null;
-            foreach(player character in playerlist) {
+            foreach(character character in characterlist) {
                 if (first == null) {
                     first = new SinglyLinkedNode(character, null);
                 }else {
@@ -43,19 +43,19 @@ namespace Initiative_tracker {
                     }
                 }
             }
-            playerlist = new List<player>();
-            first.getList(playerlist);
-            InitiativeList.ItemsSource = playerlist;
+            characterlist = new List<character>();
+            first.getList(characterlist);
+            InitiativeList.ItemsSource = characterlist;
             
         }
 
         void AdvanceTurn(object sender, RoutedEventArgs args) {
-            player last = playerlist[0];
+            character last = characterlist[0];
             last.progress();
-            playerlist.RemoveAt(0);
-            playerlist.Add(last);
+            characterlist.RemoveAt(0);
+            characterlist.Add(last);
             turn++;
-            round = turn / playerlist.Count;
+            round = turn / characterlist.Count;
             InitiativeList.Items.Refresh();
             TurnaRound.Text = "Turn: " + turn + " Round: " + round;
         }
@@ -67,25 +67,25 @@ namespace Initiative_tracker {
             
         }
 
-        void getNames(List<string> names) {
-            nameList = names;
+        void getNames(List<player> players) {
+            playerList = players;
             newEncounter.IsEnabled = true;
             advanceTurn.IsEnabled = true;
         }
         void addEffect(object sender, RoutedEventArgs args) {
             Button button = sender as Button;
-            player target = button.DataContext as player;
+            character target = button.DataContext as character;
 
             target.createEffect(refreshView);
         }
 
         private void NewEncounter(object sender, RoutedEventArgs e) {
-            NewEncounterDialog ned = new NewEncounterDialog(nameList, getInitList);
+            NewEncounterDialog ned = new NewEncounterDialog(playerList, getInitList);
             ned.ShowDialog();
         }
 
-        void getInitList(List<player> players) {
-            playerlist = players;
+        void getInitList(List<character> characters) {
+            characterlist = characters;
             sortList();
         }
         void refreshView() {
@@ -94,20 +94,20 @@ namespace Initiative_tracker {
     }
 
     public class SinglyLinkedNode {
-        public player character { get; set; }
+        public character character { get; set; }
         public SinglyLinkedNode node { get; set; }
-        public SinglyLinkedNode(player _char, SinglyLinkedNode _node) {
+        public SinglyLinkedNode(character _char, SinglyLinkedNode _node) {
             character = _char;
             node = _node;
         }
-        player getNext() {
+        character getNext() {
             if (node != null) {
                 return node.character;
             }
             return null;
         }
 
-        public void insert(player _char) {
+        public void insert(character _char) {
             if (node != null) {
                 if (_char.initiative > node.character.initiative) {
                     SinglyLinkedNode newnode = new SinglyLinkedNode(_char, node);
@@ -119,28 +119,30 @@ namespace Initiative_tracker {
                 node = new SinglyLinkedNode(_char, node);
             }
         }
-        public void getList(List<player> playerlist) {
-            playerlist.Add(character);
+        public void getList(List<character> characterlist) {
+            characterlist.Add(character);
             if (node != null) {
-                node.getList(playerlist);
+                node.getList(characterlist);
             }
         }
     }
 
-    public class player {
+    public class character {
         public delegate void refresh();
         event refresh refresher;
         public string name { get; set; }
         public int initiative { get; set; }
+        public int health { get; set; }
 
         public string status { get; set; }
 
-        private List<Status> statusList;
-        public player(string _name, int _initiative) {
+        private List<string> statusList;
+        public character(string _name, int _initiative, int _health) {
             name = _name;
             initiative = _initiative;
             status = "";
-            statusList = new List<Status>();
+            health = _health;
+            statusList = new List<string>();
         }
         public void createEffect(refresh method) {
             refresher += method;
@@ -149,19 +151,20 @@ namespace Initiative_tracker {
         }
 
         public void addEffect(string name, int duration) {
-            statusList.Add(new Status(name, duration));
+            //statusList.Add(new Status(name, duration));
+            statusList.Add(name);
             status = "";
-            foreach(Status stat in statusList) {
+            /*foreach(Status stat in statusList) {
                 if (stat.duration > 0) {
                     status += ", " + stat.name + ": " + stat.duration + " turns";
                 }
                 
             }
-            status = status.Substring(2);
+            status = status.Substring(2);*/
             refresher.Invoke();
         }
         public void progress() {
-            foreach(Status stat in statusList) {
+            /*foreach(Status stat in statusList) {
                 status = "";
                 stat.progress();
                 if (stat.duration > 0) {
@@ -173,7 +176,7 @@ namespace Initiative_tracker {
             }catch {
                 status = "";
             }
-            
+            */
         }
     }
     public class Status {
