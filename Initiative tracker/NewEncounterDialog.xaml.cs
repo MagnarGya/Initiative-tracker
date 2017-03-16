@@ -22,15 +22,19 @@ namespace Initiative_tracker {
         List<player> playerlist;
         List<player> oldnames;
         List<character> characters;
+        character chosen;
         public NewEncounterDialog(List<player> players, givelist method) {
             this.characters = new List<character>();
             this.playerlist = new List<player>(players);
             oldnames = new List<player>(players);
             listgiver += method;
+            chosen = null;
             InitializeComponent();
             refreshView();
         }
         void refreshView() {
+            memberListView.Items.Refresh();
+            if (chosen == null) { 
             if (playerlist.Count!=0) {
                 string name = playerlist[0].name;
                 int health = playerlist[0].health;
@@ -44,6 +48,14 @@ namespace Initiative_tracker {
                 Keyboard.Focus(namebox);
             }
             initBox.Text = "";
+            }else {
+                namebox.Text = chosen.name;
+                initBox.Text = chosen.initiative.ToString();
+                healthBox.Text = chosen.health.ToString();
+                addButton.Content = "Save Change";
+                Keyboard.Focus(namebox);
+            }
+            Height = 155 + (20 * characters.Count);
         }
 
         void doneClick(object sender, RoutedEventArgs args) {
@@ -57,11 +69,30 @@ namespace Initiative_tracker {
                 string name = namebox.Text;
                 int initiative = Convert.ToInt32(initBox.Text);
                 int health = Convert.ToInt32(healthBox.Text);
-                characters.Add(new character(name, initiative,health));
+                if (chosen == null) {
+                    characters.Add(new character(name, initiative, health));
+                }else {
+                    chosen.name = name;
+                    chosen.initiative = initiative;
+                    chosen.health = health;
+                    addButton.Content = "Add";
+                    chosen = null;
+                }
+                memberListView.ItemsSource = characters;
                 refreshView();
             }catch {
 
             }
+        }
+
+        void selectionChanged(object sender, RoutedEventArgs args) {
+            try {
+                string name = namebox.Text;
+                int health = Convert.ToInt32(healthBox.Text);
+                playerlist.Insert(0, new player(name, health));
+            } catch { }
+            chosen = memberListView.SelectedItem as character;
+            refreshView();
         }
     }
 }

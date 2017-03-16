@@ -5,16 +5,20 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="ChangeHealthDialog" Height="300" Width="300">
+        Title="Change Health" Height="95" Width="300">
     <Grid>
-        <DockPanel>
+        <StackPanel Orientation="Vertical">
             <DockPanel>
-                <TextBlock Text="Name: "><Run Text="{Binding name}"></Run></TextBlock>
+                <TextBlock Name="nameBlock"/>
             </DockPanel>
             <DockPanel>
                 <TextBlock Text="Health: "/>
-                <TextBox Text="{Binding health}"></TextBox>
+                <TextBox Name="healthBox"></TextBox>
             </DockPanel>
-        </DockPanel>
+            <DockPanel>
+                <Button Content="Save" Margin="0,0,5,0" Width="145" Click="SaveClick"/>
+                <Button Content="Cancel" Click="CancelClick"/>
+            </DockPanel>
+        </StackPanel>
     </Grid>
 </Window>

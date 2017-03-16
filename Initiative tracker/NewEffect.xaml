@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="NewEffect" Height="120" Width="300">
+        Title="New Effect" Height="115" Width="300">
     <StackPanel>
         <DockPanel>
             <TextBlock Text="Name"/>

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="New Group" Height="105" Width="300">
+        Title="New Group" Height="135" Width="300">
     <StackPanel>
         <DockPanel>
             <TextBlock Text="Name"/>
@@ -15,9 +15,10 @@
             <TextBlock Text="Health"/>
             <TextBox Name="healthBox" Margin="5,0,5,5"/>
         </DockPanel>
-        <DockPanel>
-            <Button Content="Add" Width="145" Click="addClick"></Button>
-            <Button Content="Done" Click="doneClick"></Button>
-        </DockPanel>
+        <Button Name="addButton" Content="Add" Width="50" Click="addClick" HorizontalAlignment="Right"></Button>
+        <Border BorderBrush="Black" BorderThickness="1" Margin="0,2,0,2"/>
+        <Button Name="doneButton" Content="Done" Width="50" Click="doneClick" HorizontalAlignment="Right"></Button>
+        <ListView Name="memberListView" SelectionChanged="MemberSelected">
+        </ListView>
     </StackPanel>
 </Window>

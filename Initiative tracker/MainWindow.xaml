@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Initiative_tracker"
         mc:Ignorable="d"
-        Title="Initiative Tracker" Height="350" Width="525">
+        Title="Initiative Tracker" Height="Auto" Width="Auto">
     <StackPanel Orientation="Vertical" >
         <Border BorderThickness="2" Background="AliceBlue" Margin="0,0,0,1">
             <DockPanel>
@@ -28,18 +28,7 @@
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>
-                    <GridViewColumn Header="Status Effect">
-                        <!--<GridViewColumn.CellTemplate>
-                            <DataTemplate>
-                                <ComboBox ItemsSource="{Binding Path=DataContext,ElementName=statuslist}"
-                                          DisplayMemberPath="Name" 
-                                    SelectedValuePath="Id" 
-    SelectedValue="{Binding ClassId}>
-                                    
-                                </ComboBox>
-                            </DataTemplate>
-                        </GridViewColumn.CellTemplate>-->
-                    </GridViewColumn>
+                    <GridViewColumn Header="Status Effect" Width="Auto" DisplayMemberBinding="{Binding status}"/>
                     <GridViewColumn Header="Add Effect">
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
