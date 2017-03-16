@@ -79,6 +79,12 @@ namespace Initiative_tracker {
             target.createEffect(refreshView);
         }
 
+        void changeHealth(object sender, RoutedEventArgs args) {
+            Button button = sender as Button;
+            character target = button.DataContext as character;
+
+        }
+
         private void NewEncounter(object sender, RoutedEventArgs e) {
             NewEncounterDialog ned = new NewEncounterDialog(playerList, getInitList);
             ned.ShowDialog();

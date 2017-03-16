@@ -21,6 +21,13 @@
                     <GridViewColumn Header="Initiative" DisplayMemberBinding="{Binding initiative}"/>
                     <GridViewColumn Header="Name" DisplayMemberBinding="{Binding name}"></GridViewColumn>
                     <GridViewColumn Header="Health" DisplayMemberBinding="{Binding health}"/>
+                    <GridViewColumn Header="Change Health">
+                        <GridViewColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Click="changeHealth" Content="Change"/>
+                            </DataTemplate>
+                        </GridViewColumn.CellTemplate>
+                    </GridViewColumn>
                     <GridViewColumn Header="Status Effect">
                         <!--<GridViewColumn.CellTemplate>
                             <DataTemplate>
