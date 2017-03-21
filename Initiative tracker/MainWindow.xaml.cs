@@ -21,14 +21,21 @@ namespace Initiative_tracker {
         List<character> characterlist;
         List<character> orgCharList;
         List<player> playerList;
+        List<Status> statuslist;
+        bool isInitializing;
         int turn;
         int round;
         public MainWindow() {
+            isInitializing = true;
             InitializeComponent();
             turn = 0;
             round = 0;
             advanceTurn.IsEnabled = false;
             newEncounter.IsEnabled = false;
+            StatusManipList.Visibility = Visibility.Collapsed;
+            statuslist = new List<Status>();
+            StatusManipList.ItemsSource = statuslist;
+            isInitializing = false;
         }
 
         void sortList() {
@@ -47,14 +54,13 @@ namespace Initiative_tracker {
             characterlist = new List<character>();
             first.getList(characterlist);
             InitiativeList.ItemsSource = characterlist;
-            refreshView();
         }
 
         void AdvanceTurn(object sender, RoutedEventArgs args) {
             character last = characterlist[0];
-            last.progress();
             characterlist.RemoveAt(0);
             characterlist.Add(last);
+            characterlist.First().progress();
             turn++;
             round = (turn / characterlist.Count)+1;
             refreshView();
@@ -76,7 +82,8 @@ namespace Initiative_tracker {
             Button button = sender as Button;
             character target = button.DataContext as character;
 
-            target.createEffect(refreshView);
+            NewEffect ne = new NewEffect(addEffect, target, characterlist.First(),characterlist);
+            ne.ShowDialog();
         }
 
         void changeHealth(object sender, RoutedEventArgs args) {
@@ -95,16 +102,90 @@ namespace Initiative_tracker {
             turn = 0;
             characterlist = characters;
             orgCharList = new List<character>(characters);
+            CharacterList.ItemsSource = orgCharList;
             advanceTurn.IsEnabled = true;
+            statuslist = new List<Status>();
+            StatusManipList.ItemsSource = statuslist;
             sortList();
+            refreshView();
         }
-        void refreshView() {
-            /*foreach(character character in characterlist) {
-                if (character.health <= 0) {
-                    characterlist.Remove(character);
+
+        void addToCombat(object sender, RoutedEventArgs args) {
+            character senderchar = (sender as Button).DataContext as character;
+            bool exists = false;
+            foreach (character ch in characterlist){
+                if (ch.name.Contains(senderchar.name)) {
+                    exists = true;
+                    break;
                 }
-            }*/
+            }
+            if (exists) {
+                int i = 0;
+                while (exists) {
+                    i++;
+                    exists = false;
+                    foreach (character ch in characterlist) {
+                        if (ch.name.Contains(senderchar.name + i)) {
+                            exists = true;
+                        }
+                    }
+                }
+                characterlist.Add(new character((senderchar.name + i), senderchar.initiative, senderchar.health));
+            } else {
+                characterlist.Add(new character(senderchar.name, senderchar.initiative, senderchar.health));
+            }
+            character first = characterlist.First();
+            sortList();
+            while (characterlist.First() != first) {
+                turn--;
+                AdvanceTurn(sender, args);
+            }
+            
+
+            refreshView();
+        }
+
+        void removeFromCombat(object sender, RoutedEventArgs args) {
+            character senderchar = (sender as Button).DataContext as character;
+            characterlist.Remove(senderchar);
+            refreshView();
+        }
+
+        void changeListView(object sender, RoutedEventArgs args) {
+            if (!isInitializing) {
+                ComboBox cb = sender as ComboBox;
+                if (cb.SelectedIndex == 1) {
+                    CharacterList.Visibility = Visibility.Collapsed;
+                    StatusManipList.Visibility = Visibility.Visible;
+                } else if (cb.SelectedIndex == 0) {
+                    CharacterList.Visibility = Visibility.Visible;
+                    StatusManipList.Visibility = Visibility.Collapsed;
+                }
+            }
+            
+        }
+
+        void addEffect(string name, int duration, character target, character source) {
+            Status newStatus = new Status(name, duration, target, source);
+            target.inflictEffect(newStatus);
+            source.causeEffect(newStatus);
+
+            statuslist.Add(newStatus);
+            refreshView();
+        }
+        void ModifyStatus(object sender, RoutedEventArgs args) {
+            Status sendee = (sender as Button).DataContext as Status;
+            ModEffect me = new ModEffect(sendee, characterlist,refreshView);
+            me.Show();
+        }
+        
+        void refreshView() {
+            foreach(character character in characterlist) {
+                character.refresh();
+            }
             InitiativeList.Items.Refresh();
+            CharacterList.Items.Refresh();
+            StatusManipList.Items.Refresh();
             TurnaRound.Text = "Round: " + round;
         }
     }
@@ -144,8 +225,6 @@ namespace Initiative_tracker {
     }
 
     public class character {
-        public delegate void refresh();
-        event refresh refresher;
         public string name { get; set; }
         public int initiative { get; set; }
         public int health { get; set; }
@@ -153,25 +232,42 @@ namespace Initiative_tracker {
         public string status {get; set;}
 
         private List<Status> statusList;
+        private List<Status> causeList;
         public character(string _name, int _initiative, int _health) {
             name = _name;
             initiative = _initiative;
             health = _health;
             status = "";
             statusList = new List<Status>();
-        }
-        public void createEffect(refresh method) {
-            refresher += method;
-            NewEffect ne = new NewEffect(this.addEffect);
-            ne.ShowDialog();
+            causeList = new List<Status>();
         }
 
-        public void addEffect(string name, int duration) {
-            statusList.Add(new Status(name, duration));
 
+        public void inflictEffect(Status _status) {
+            statusList.Add(_status);
+        }
+
+        public void causeEffect(Status _status) {
+            causeList.Add(_status);
+        }
+
+        public void removeInflict(Status effect) {
+            statusList.Remove(effect);
+        }
+        public void removeCause(Status effect) {
+            causeList.Remove(effect);
+        }
+        public void progress() {
+            foreach (Status stat in causeList) {
+                stat.progress();
+            }
+            
+            
+        }
+        public void refresh() {
             status = "";
-            foreach (Status stat in statusList) {
-                if (stat.duration > 0) {
+            foreach(Status stat in statusList) {
+                if(stat.duration > 0) {
                     status += ", " + stat.name + ": " + stat.duration + " turns";
                 }
             }
@@ -180,23 +276,6 @@ namespace Initiative_tracker {
             } catch {
                 status = "";
             }
-
-            refresher.Invoke();
-        }
-        public void progress() {
-            status = "";
-            foreach (Status stat in statusList) {
-                stat.progress();
-                if (stat.duration > 0) {
-                    status += ", " + stat.name + ": " + stat.duration + " turns";
-                }
-            }
-            try {
-                status = status.Substring(2);
-            }catch {
-                status = "";
-            }
-            
         }
         public override string ToString() {
             return "Name: " + name + " Health: " + health + " Initiative: " + initiative;
@@ -205,12 +284,27 @@ namespace Initiative_tracker {
     public class Status {
         public string name { get; set; }
         public int duration { get; set; }
-        public Status(string _name, int _duration) {
+        public character source { get; set; }
+        public character target { get; set; }
+        public Status(string _name, int _duration, character _target, character _source) {
             name = _name;
             duration = _duration;
+            source = _source;
+            target = _target;
         }
         public void progress() {
             duration = duration - 1;
+        }
+        public void update(string _name, int _duration, character _target, character _source) {
+            name = _name;
+            duration = _duration;
+            target.removeInflict(this);
+            _target.inflictEffect(this);
+            target = _target;
+
+            source.removeCause(this);
+            _source.causeEffect(this);
+            source = _source;
         }
     }
 }

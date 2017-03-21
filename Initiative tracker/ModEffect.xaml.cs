@@ -14,18 +14,22 @@ using System.Windows.Shapes;
 
 namespace Initiative_tracker {
     /// <summary>
-    /// Interaction logic for NewEffect.xaml
+    /// Interaction logic for Window1.xaml
     /// </summary>
-    public partial class NewEffect : Window {
-        public delegate void giveeffect(string name, int duration, character target, character source);
-        event giveeffect effectgiver;
-        public NewEffect(giveeffect method, character target, character source, List<character> characters) {
-            effectgiver += method;
+    public partial class ModEffect : Window {
+        public delegate void refresh();
+        event refresh refresher;
+        Status changee;
+        public ModEffect(Status _changee, List<character> characters, refresh method) {
             InitializeComponent();
+            refresher += method;
+            changee = _changee;
+            namebox.Text = changee.name;
+            DuraBox.Text = changee.duration.ToString();
             TargetBox.ItemsSource = characters;
             SourceBox.ItemsSource = characters;
-            TargetBox.SelectedItem = target;
-            SourceBox.SelectedItem = source;
+            TargetBox.SelectedItem = changee.target;
+            SourceBox.SelectedItem = changee.source;
             Keyboard.Focus(namebox);
         }
 
@@ -33,15 +37,17 @@ namespace Initiative_tracker {
             try {
                 string name = namebox.Text;
                 int duration = Convert.ToInt32(DuraBox.Text);
-                effectgiver.Invoke(name, duration, TargetBox.SelectedItem as character, SourceBox.SelectedItem as character);
+                changee.update(name, duration, TargetBox.SelectedItem as character, SourceBox.SelectedItem as character);
+                refresher.Invoke();
                 this.Close();
             } catch {
 
             }
         }
-        
+
         void cancelClick(object sender, RoutedEventArgs args) {
             this.Close();
         }
     }
 }
+
